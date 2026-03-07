@@ -1,2 +1,281 @@
 [
+  {
+    "id": 31,
+    "date": "15.08.2025",
+    "title": "Kul Hakkı Ateşten Gömlektir",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir).mp3",
+    "source": "website"
+  },
+  {
+    "id": 30,
+    "date": "22.08.2025",
+    "title": "İbadet; Ruha Sekinet, Topluma Huzur Verir",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0badet;%20Ruha%20Sekinet,%20Topluma%20Huzur%20Verir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0badet;%20Ruha%20Sekinet,%20Topluma%20Huzur%20Verir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(%C4%B0badet;%20Ruha%20Sekinet,%20Topluma%20Huzur%20Verir).mp3",
+    "source": "website"
+  },
+  {
+    "id": 29,
+    "date": "29.08.2025",
+    "title": "Âlemlere Rahmet Hz. Muhammed (s.a.s)",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C3%82lemlere%20Rahmet%20Hz.%20Muhammed%20(s.a.s).pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C3%82lemlere%20Rahmet%20Hz.%20Muhammed%20(s.a.s).doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(%C3%82lemlere%20Rahmet%20Hz.%20Muhammed%20(s.a.s)).mp3",
+    "source": "website"
+  },
+  {
+    "id": 28,
+    "date": "05.09.2025",
+    "title": "İlim Hakkı Bilmektir",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0lim%20Hakk%C4%B1%20Bilmektir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0lim%20Hakk%C4%B1%20Bilmektir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(%C4%B0lim%20Hakk%C4%B1%20Bilmektir).mp3",
+    "source": "website"
+  },
+  {
+    "id": 27,
+    "date": "12.09.2025",
+    "title": "Peygamberimiz ve Aile Ahlakı",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20ve%20Aile%20Ahlak%C4%B1.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20ve%20Aile%20Ahlak%C4%B1.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Peygamberimiz%20ve%20Aile%20Ahlak%C4%B1).mp3",
+    "source": "website"
+  },
+  {
+    "id": 26,
+    "date": "19.09.2025",
+    "title": "Peygamberimiz (s.a.s) ve Ticaret Ahlakı",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20(s.a.s)%20ve%20Ticaret%20Ahlak%C4%B1.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20(s.a.s)%20ve%20Ticaret%20Ahlak%C4%B1.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Peygamberimiz%20(s.a.s)%20ve%20Ticaret%20Ahlak%C4%B1).mp3",
+    "source": "website"
+  },
+  {
+    "id": 25,
+    "date": "26.09.2025",
+    "title": "Peygamberimiz (s.a.s), Cami ve Namaz",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20(s.a.s),%20Cami%20ve%20Namaz.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Peygamberimiz%20(s.a.s),%20Cami%20ve%20Namaz.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Peygamberimiz%20(s.a.s),%20Cami%20ve%20Namaz).mp3",
+    "source": "website"
+  },
+  {
+    "id": 24,
+    "date": "03.10.2025",
+    "title": "Hendek'ten Gazze'ye: Zafer İnananlarındır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Hendek'ten%20Gazze'ye,%20Zafer%20%C4%B0nananlar%C4%B1nd%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Hendek'ten%20Gazze'ye,%20Zafer%20%C4%B0nananlar%C4%B1nd%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Hendek'ten%20Gazze'ye,%20Zafer%20%C4%B0nananlar%C4%B1nd%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
+    "id": 23,
+    "date": "10.10.2025",
+    "title": "Cenâb-ı Hakk’ın Nazargâhı: Kalp",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Cen%C3%A2b-%C4%B1%20Hakk%E2%80%99%C4%B1n%20Nazarg%C3%A2h%C4%B1,%20Kalp.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Cen%C3%A2b-%C4%B1%20Hakk%E2%80%99%C4%B1n%20Nazarg%C3%A2h%C4%B1,%20Kalp.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Cen%C3%A2b-%C4%B1%20Hakk%E2%80%99%C4%B1n%20Nazarg%C3%A2h%C4%B1,%20Kalp).mp3",
+    "source": "website"
+  },
+  {
+    "id": 22,
+    "date": "17.10.2025",
+    "title": "Müslümanın Hayatına Yön Veren Rehber: Sünnet-i Seniyye",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/M%C3%BCsl%C3%BCman%C4%B1n%20Hayat%C4%B1na%20Y%C3%B6n%20Veren%20Rehber,%20S%C3%BCnnet-i%20Seniyye%20.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/M%C3%BCsl%C3%BCman%C4%B1n%20Hayat%C4%B1na%20Y%C3%B6n%20Veren%20Rehber,%20S%C3%BCnnet-i%20Seniyye%20.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(M%C3%BCsl%C3%BCman%C4%B1n%20Hayat%C4%B1na%20Y%C3%B6n%20Veren%20Rehber,%20S%C3%BCnnet-i%20Seniyye).mp3",
+    "source": "website"
+  },
+  {
+    "id": 21,
+    "date": "24.10.2025",
+    "title": "Birlikte Bereket, Kardeşlikte Rahmet Vardır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlikte%20Bereket,%20Karde%C5%9Flikte%20Rahmet%20Vard%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlikte%20Bereket,%20Karde%C5%9Flikte%20Rahmet%20Vard%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Birlikte%20Bereket,%20Karde%C5%9Flikte%20Rahmet%20Vard%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
+    "id": 20,
+    "date": "31.10.2025",
+    "title": "Ailede Huzurun Kaynağı: Merhamet ve Muhabbet",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ailede%20Huzurun%20Kayna%C4%9F%C4%B1,%20Merhamet%20ve%20Muhabbet.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ailede%20Huzurun%20Kayna%C4%9F%C4%B1,%20Merhamet%20ve%20Muhabbet.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Ailede%20Huzurun%20Kayna%C4%9F%C4%B1,%20Merhamet%20ve%20Muhabbet).mp3",
+    "source": "website"
+  },
+  {
+    "id": 19,
+    "date": "07.11.2025",
+    "title": "Vefa İmandandır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Vefa%20%C4%B0mandand%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Vefa%20%C4%B0mandand%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Vefa%20%C4%B0mandand%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
+    "id": 18,
+    "date": "14.11.2025",
+    "title": "Vatan ve Millet Ruhumuz",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Vatan%20ve%20Millet%20Ruhumuz.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Vatan%20ve%20Millet%20Ruhumuz.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Vatan%20ve%20Millet%20Ruhumuz).mp3",
+    "source": "website"
+  },
+  {
+    "id": 17,
+    "date": "21.11.2025",
+    "title": "Şiddetin Çaresi Merhamet Eğitimi",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C5%9Eiddetin%20%C3%87aresi%20Merhamet%20E%C4%9Fitimi.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C5%9Eiddetin%20%C3%87aresi%20Merhamet%20E%C4%9Fitimi.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(%C5%9Eiddetin%20%C3%87aresi%20Merhamet%20E%C4%9Fitimi).mp3",
+    "source": "website"
+  },
+  {
+    "id": 16,
+    "date": "28.11.2025",
+    "title": "Fedakârlığın Zirvesi: Îsâr",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Fedakarl%C4%B1%C4%9F%C4%B1n%20Zirvesi%20%C4%B0sar.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Fedakarl%C4%B1%C4%9F%C4%B1n%20Zirvesi%20%C4%B0sar.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Fedakarl%C4%B1%C4%9F%C4%B1n%20Zirvesi%20%C4%B0sar).mp3",
+    "source": "website"
+  },
+  {
+    "id": 15,
+    "date": "05.12.2025",
+    "title": "İnsan, Huzuru İbadetle Elde Eder",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0nsan,%20Huzuru%20%C4%B0badetle%20Elde%20Eder.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0nsan,%20Huzuru%20%C4%B0badetle%20Elde%20Eder.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe.mp3",
+    "source": "website"
+  },
+  {
+    "id": 14,
+    "date": "12.12.2025",
+    "title": "İnsan; Kainatın Gözbebeği",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0nsan;%20Kainat%C4%B1n%20G%C3%B6zbebe%C4%9Fi.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/%C4%B0nsan;%20Kainat%C4%B1n%20G%C3%B6zbebe%C4%9Fi.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(%C4%B0nsan;%20Kainat%C4%B1n%20G%C3%B6zbebe%C4%9Fi).mp3",
+    "source": "website"
+  },
+  {
+    "id": 13,
+    "date": "19.12.2025",
+    "title": "Her Anımızı Ebedi Kazanca Dönüştürebiliriz",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Her%20An%C4%B1m%C4%B1z%C4%B1%20Ebedi%20Kazanca%20D%C3%B6n%C3%BC%C5%9Ft%C3%BCrebiliriz.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Her%20An%C4%B1m%C4%B1z%C4%B1%20Ebedi%20Kazanca%20D%C3%B6n%C3%BC%C5%9Ft%C3%BCrebiliriz.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Her%20An%C4%B1m%C4%B1z%C4%B1%20Ebedi%20Kazanca%20D%C3%B6n%C3%BC%C5%9Ft%C3%BCrebiliriz).mp3",
+    "source": "website"
+  },
+  {
+    "id": 12,
+    "date": "26.12.2025",
+    "title": "Kimliğimiz Geleceğimizdir",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kimli%C4%9Fimiz%20Gelece%C4%9Fimizdir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kimli%C4%9Fimiz%20Gelece%C4%9Fimizdir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Kimli%C4%9Fimiz%20Gelece%C4%9Fimizdir%20).mp3",
+    "source": "website"
+  },
+  {
+    "id": 11,
+    "date": "02.01.2026",
+    "title": "Her Şey Allah'ı Anlatır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Her%20%C5%9Eey%20Allah'%C4%B1%20Anlat%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Her%20%C5%9Eey%20Allah'%C4%B1%20Anlat%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Her%20%C5%9Eey%20Allah'%C4%B1%20Anlat%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
+    "id": 10,
+    "date": "09.01.2026",
+    "title": "Sesli Hutbe",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Namaz.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Namaz.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Namaz).mp3",
+    "source": "website"
+  },
+  {
+    "id": 9,
+    "date": "16.01.2026",
+    "title": "Din İstismarı",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Din%20%C4%B0stismar%C4%B1.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Din%20%C4%B0stismar%C4%B1.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Din%20%C4%B0stismar%C4%B1).mp3",
+    "source": "website"
+  },
+  {
+    "id": 8,
+    "date": "23.01.2026",
+    "title": "Akran İlişkileri",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Akran%20%C4%B0li%C5%9Fkileri.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Akran%20%C4%B0li%C5%9Fkileri.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Akran%20%C4%B0li%C5%9Fkileri).mp3",
+    "source": "website"
+  },
+  {
+    "id": 7,
+    "date": "30.01.2026",
+    "title": "Tövbeye Yönelmek",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/T%C3%B6vbeye%20Y%C3%B6nelmek.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/T%C3%B6vbeye%20Y%C3%B6nelmek.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(T%C3%B6vbeye%20Y%C3%B6nelmek).mp3",
+    "source": "website"
+  },
+  {
+    "id": 6,
+    "date": "06.02.2026",
+    "title": "Birlik ve Beraberlik",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlik%20ve%20Beraberlik.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlik%20ve%20Beraberlik.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Birlik%20ve%20Beraberlik).mp3",
+    "source": "website"
+  },
+  {
+    "id": 5,
+    "date": "13.02.2026",
+    "title": "Ramazan İklimi",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan%20%C4%B0klimi.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan%20%C4%B0klimi.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Ramazan%20%C4%B0klimi).mp3",
+    "source": "website"
+  },
+  {
+    "id": 4,
+    "date": "20.02.2026",
+    "title": "Ramazan, Cami ve Hayat",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan,%20Cami%20ve%20Hayat.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan,%20Cami%20ve%20Hayat.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Ramazan,%20Cami%20ve%20Hayat).mp3",
+    "source": "website"
+  },
+  {
+    "id": 3,
+    "date": "27.02.2026",
+    "title": "Bağımlılıkla Mücadelede Ramazan Bir Fırsattır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ba%C4%9F%C4%B1ml%C4%B1l%C4%B1kla%20M%C3%BCcadelede%20Ramazan%20Bir%20F%C4%B1rsatt%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ba%C4%9F%C4%B1ml%C4%B1l%C4%B1kla%20M%C3%BCcadelede%20Ramazan%20Bir%20F%C4%B1rsatt%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Ba%C4%9F%C4%B1ml%C4%B1l%C4%B1kla%20M%C3%BCcadelede%20Ramazan%20Bir%20F%C4%B1rsatt%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
+    "id": 2,
+    "date": "06.03.2026",
+    "title": "Zekat ve Fıtır Sadakası",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Zekat%20ve%20F%C4%B1t%C4%B1r%20Sadakas%C4%B1.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Zekat%20ve%20F%C4%B1t%C4%B1r%20Sadakas%C4%B1.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Zekat%20ve%20F%C4%B1t%C4%B1r%20Sadakas%C4%B1).mp3",
+    "source": "website"
+  },
+  {
+    "id": 1,
+    "date": "06.03.2026",
+    "title": "TARİH  BAŞLIK  PDF  WORD  MP3  06.03.2026Zekat ve Fıtır SadakasıZekat ve Fıtır SadakasıZekat ve Fıtır SadakasıSesli Hutbe27.02.2026Bağımlılıkla Mücadelede Ramazan Bir FırsattırBağımlılıkla Mücadelede Ramazan Bir FırsattırBağımlılıkla Mücadelede Ramazan Bir FırsattırSesli Hutbe20.02.2026Ramazan, Cami ve HayatRamazan, Cami ve HayatRamazan, Cami ve HayatSesli Hutbe13.02.2026Ramazan İklimiRamazan İklimiRamazan İklimiSesli Hutbe06.02.2026Birlik ve BeraberlikBirlik ve BeraberlikBirlik ve BeraberlikSesli Hutbe30.01.2026Tövbeye YönelmekTövbeye YönelmekTövbeye YönelmekSesli Hutbe23.01.2026Akran İlişkileriAkran İlişkileriAkran İlişkileriSesli Hutbe16.01.2026Din İstismarıDin İstismarıDin İstismarıSesli Hutbe09.01.2026NamazNamazNamazSesli Hutbe02.01.2026Her Şey Allah'ı AnlatırHer Şey Allah'ı AnlatırHer Şey Allah'ı AnlatırSesli Hutbe26.12.2025Kimliğimiz GeleceğimizdirKimliğimiz GeleceğimizdirKimliğimiz GeleceğimizdirSesli Hutbe19.12.2025Her Anımızı Ebedi Kazanca DönüştürebilirizHer Anımızı Ebedi Kazanca DönüştürebilirizHer Anımızı Ebedi Kazanca DönüştürebilirizSesli Hutbe12.12.2025İnsan; Kainatın Gözbebeğiİnsan; Kainatın Gözbebeğiİnsan; Kainatın GözbebeğiSesli Hutbe05.12.2025İnsan, Huzuru İbadetle Elde Ederİnsan, Huzuru İbadetle Elde Ederİnsan, Huzuru İbadetle Elde EderSesli Hutbe28.11.2025Fedakârlığın Zirvesi: ÎsârFedakârlığın Zirvesi: ÎsârFedakârlığın Zirvesi: ÎsârSesli Hutbe21.11.2025Şiddetin Çaresi Merhamet EğitimiŞiddetin Çaresi Merhamet EğitimiŞiddetin Çaresi Merhamet EğitimiSesli Hutbe14.11.2025Vatan ve Millet RuhumuzVatan ve Millet RuhumuzVatan ve Millet RuhumuzSesli Hutbe07.11.2025Vefa İmandandırVefa İmandandırVefa İmandandırSesli Hutbe31.10.2025Ailede Huzurun Kaynağı: Merhamet ve Muhabbet Ailede Huzurun Kaynağı: Merhamet ve Muhabbet Ailede Huzurun Kaynağı: Merhamet ve Muhabbet Sesli Hutbe24.10.2025Birlikte Bereket, Kardeşlikte Rahmet VardırBirlikte Bereket, Kardeşlikte Rahmet VardırBirlikte Bereket, Kardeşlikte Rahmet VardırSesli Hutbe17.10.2025Müslümanın Hayatına Yön Veren Rehber: Sünnet-i Seniyye Müslümanın Hayatına Yön Veren Rehber, Sünnet-i Seniyye Müslümanın Hayatına Yön Veren Rehber, Sünnet-i Seniyye Sesli Hutbe10.10.2025Cenâb-ı Hakk’ın Nazargâhı: KalpCenâb-ı Hakk’ın Nazargâhı: KalpCenâb-ı Hakk’ın Nazargâhı: KalpSesli Hutbe03.10.2025Hendek'ten Gazze'ye: Zafer İnananlarındırHendek'ten Gazze'ye: Zafer İnananlarındırHendek'ten Gazze'ye: Zafer İnananlarındırSesli Hutbe26.09.2025Peygamberimiz (s.a.s), Cami ve NamazPeygamberimiz (s.a.s), Cami ve NamazPeygamberimiz (s.a.s), Cami ve NamazSesli Hutbe19.09.2025Peygamberimiz (s.a.s) ve Ticaret AhlakıPeygamberimiz (s.a.s) ve Ticaret AhlakıPeygamberimiz (s.a.s) ve Ticaret AhlakıSesli Hutbe12.09.2025Peygamberimiz ve Aile AhlakıPeygamberimiz ve Aile AhlakıPeygamberimiz ve Aile AhlakıSesli Hutbe05.09.2025İlim Hakkı Bilmektirİlim Hakkı Bilmektirİlim Hakkı BilmektirSesli Hutbe29.08.2025Âlemlere Rahmet Hz. Muhammed (s.a.s)Âlemlere Rahmet Hz. Muhammed (s.a.s)Âlemlere Rahmet Hz. Muhammed (s.a.s)Sesli Hutbe22.08.2025İbadet; Ruha Sekinet, Topluma Huzur Verirİbadet; Ruha Sekinet, Topluma Huzur Verirİbadet; Ruha Sekinet, Topluma Huzur VerirSesli Hutbe15.08.2025Kul Hakkı Ateşten GömlektirKul Hakkı Ateşten GömlektirKul Hakkı Ateşten GömlektirSesli Hutbe",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Kul%20Hakk%C4%B1%20Ate%C5%9Ften%20G%C3%B6mlektir).mp3",
+    "source": "website"
+  }
 ]
