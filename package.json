@@ -1,0 +1,11 @@
+{
+    "private": true,
+    "scripts": {
+      "scrape": "ts-node scripts/scrape-hutbeler.ts"
+    },
+    "devDependencies": {
+      "puppeteer": "^23.0.0",
+      "ts-node": "^10.9.0",
+      "typescript": "^5.0.0"
+    }
+  }
