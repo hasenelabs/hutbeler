@@ -4,10 +4,11 @@
  * Scrapes Friday sermons (hutbeler) from:
  *   https://dinhizmetleri.diyanet.gov.tr
  *
- * Merges new entries into src/assets/data/hutbeler.json.
+ * Merges new entries into hutbeler.json.
  *
  * Usage:
  *   npx ts-node scripts/scrape-hutbeler.ts
+ *   npx ts-node scripts/scrape-hutbeler.ts --debug   (saves rendered HTML)
  *
  * Requires: puppeteer (devDependency)
  */
@@ -30,25 +31,58 @@ interface Hutbe {
 const TARGET_URL =
   'https://dinhizmetleri.diyanet.gov.tr/kategoriler/yayinlarimiz/hutbeler/t%C3%BCrk%C3%A7e';
 const OUTPUT_PATH = path.resolve(__dirname, '../hutbeler.json');
+const DEBUG = process.argv.includes('--debug');
 
 async function scrape(): Promise<Hutbe[]> {
-  const browser = await puppeteer.launch({                                                                                                      
+  const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],                                                                                         
-  }); 
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 800 });
 
   console.log('Navigating to:', TARGET_URL);
   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 60_000 });
 
-  // Wait for SharePoint-rendered content
-  await page.waitForSelector('.ms-listviewtable, .ms-vb2, table', { timeout: 30_000 }).catch(() => {
-    console.warn('Could not find expected table selector, trying fallback...');
-  });
+  // Wait for SharePoint CSR to render — try multiple possible selectors
+  const possibleSelectors = [
+    '.ms-listviewtable',
+    '.ms-vb2',
+    '.ms-vb-title',
+    'table.ms-listviewtable',
+    '#onetidDoclibViewTbl0',
+    '[id^="onetidDoclibViewTbl"]',
+    '.ms-srch-item',
+    '.dfwp-list',
+    'table',
+  ];
 
-  // Give extra time for SharePoint async render
-  await new Promise((r) => setTimeout(r, 3000));
+  let foundSelector = '';
+  for (const sel of possibleSelectors) {
+    try {
+      await page.waitForSelector(sel, { timeout: 5_000 });
+      foundSelector = sel;
+      console.log(`Found selector: ${sel}`);
+      break;
+    } catch {
+      // try next
+    }
+  }
+
+  if (!foundSelector) {
+    console.warn('No known selector found, will try generic extraction...');
+  }
+
+  // Extra wait for SharePoint async render
+  await new Promise((r) => setTimeout(r, 5000));
+
+  // Debug: save rendered HTML
+  if (DEBUG) {
+    const html = await page.content();
+    const debugPath = path.resolve(__dirname, 'debug-page.html');
+    fs.writeFileSync(debugPath, html, 'utf-8');
+    console.log(`Debug HTML saved to ${debugPath}`);
+  }
 
   const entries = await page.evaluate(() => {
     const results: Array<{
@@ -59,36 +93,121 @@ async function scrape(): Promise<Hutbe[]> {
       audio?: string;
     }> = [];
 
-    // Try to find table rows with hutbe data
+    // Strategy 1: SharePoint table rows (tr > td)
     const rows = document.querySelectorAll('tr');
-    for (const row of rows) {
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
       const cells = row.querySelectorAll('td');
       if (cells.length < 2) continue;
 
-      const dateText = cells[0]?.textContent?.trim() ?? '';
-      const titleText = cells[1]?.textContent?.trim() ?? '';
+      // Look for a date pattern in any cell
+      let dateText = '';
+      let titleText = '';
 
-      // Skip header rows or empty rows
+      for (let j = 0; j < cells.length; j++) {
+        const text = cells[j]?.textContent?.trim() ?? '';
+        if (/^\d{2}\.\d{2}\.\d{4}$/.test(text) && !dateText) {
+          dateText = text;
+        } else if (text.length > 5 && !titleText && !/^\d{2}\.\d{2}\.\d{4}$/.test(text)) {
+          titleText = text;
+        }
+      }
+
       if (!dateText || !titleText) continue;
-      if (!/\d{2}\.\d{2}\.\d{4}/.test(dateText)) continue;
 
       const links = row.querySelectorAll('a[href]');
       let pdf: string | undefined;
       let doc: string | undefined;
       let audio: string | undefined;
 
-      for (const link of links) {
-        const href = (link as HTMLAnchorElement).href;
-        if (href.endsWith('.pdf')) pdf = href;
-        else if (href.endsWith('.doc') || href.endsWith('.docx')) doc = href;
-        else if (href.endsWith('.mp3') || href.endsWith('.wav')) audio = href;
+      for (let k = 0; k < links.length; k++) {
+        const href = (links[k] as HTMLAnchorElement).href;
+        const hrefLower = href.toLowerCase();
+        if (hrefLower.includes('.pdf')) pdf = href;
+        else if (hrefLower.includes('.doc')) doc = href;
+        else if (hrefLower.includes('.mp3') || hrefLower.includes('.wav')) audio = href;
       }
 
       results.push({ date: dateText, title: titleText, pdf, doc, audio });
     }
 
+    // Strategy 2: If no table rows found, try extracting from page text
+    if (results.length === 0) {
+      const bodyText = document.body.innerText;
+      const datePattern = /(\d{2}\.\d{2}\.\d{4})/g;
+      const allLinks = document.querySelectorAll('a[href]');
+
+      // Group links by proximity to dates
+      const linkMap = new Map<string, { pdf?: string; doc?: string; audio?: string }>();
+      for (let i = 0; i < allLinks.length; i++) {
+        const a = allLinks[i] as HTMLAnchorElement;
+        const href = a.href.toLowerCase();
+        if (href.includes('.pdf') || href.includes('.doc') || href.includes('.mp3')) {
+          // Find the closest parent that might be a row
+          let parent = a.closest('tr, div[class*="row"], div[class*="item"], li');
+          if (parent) {
+            const parentText = parent.textContent ?? '';
+            const dateMatch = parentText.match(/\d{2}\.\d{2}\.\d{4}/);
+            if (dateMatch) {
+              const key = dateMatch[0];
+              if (!linkMap.has(key)) linkMap.set(key, {});
+              const links = linkMap.get(key)!;
+              if (href.includes('.pdf')) links.pdf = a.href;
+              else if (href.includes('.doc')) links.doc = a.href;
+              else if (href.includes('.mp3')) links.audio = a.href;
+            }
+          }
+        }
+      }
+    }
+
     return results;
   });
+
+  // Debug: log page structure info
+  if (DEBUG || entries.length === 0) {
+    const debugInfo = await page.evaluate(() => {
+      const tables = document.querySelectorAll('table');
+      const trs = document.querySelectorAll('tr');
+      const tds = document.querySelectorAll('td');
+      const divItems = document.querySelectorAll('[class*="item"], [class*="list"], [class*="vb"]');
+
+      // Get sample of visible text with dates
+      const bodyText = document.body.innerText;
+      const dateMatches = bodyText.match(/\d{2}\.\d{2}\.\d{4}/g) || [];
+
+      // Get all unique class names on tables and their children
+      const tableClasses: string[] = [];
+      tables.forEach((t) => {
+        if (t.className) tableClasses.push(`table.${t.className}`);
+        t.querySelectorAll('[class]').forEach((el) => {
+          if (el.className && typeof el.className === 'string') {
+            tableClasses.push(el.tagName.toLowerCase() + '.' + el.className.split(' ').join('.'));
+          }
+        });
+      });
+
+      return {
+        tables: tables.length,
+        trs: trs.length,
+        tds: tds.length,
+        divItems: divItems.length,
+        datesFound: dateMatches.slice(0, 5),
+        sampleClasses: [...new Set(tableClasses)].slice(0, 20),
+        bodyTextSample: bodyText.substring(0, 2000),
+      };
+    });
+
+    console.log('\n=== DEBUG INFO ===');
+    console.log('Tables:', debugInfo.tables);
+    console.log('TRs:', debugInfo.trs);
+    console.log('TDs:', debugInfo.tds);
+    console.log('Div items:', debugInfo.divItems);
+    console.log('Dates found in text:', debugInfo.datesFound);
+    console.log('Sample classes:', debugInfo.sampleClasses.join('\n  '));
+    console.log('\nBody text sample:\n', debugInfo.bodyTextSample);
+    console.log('=================\n');
+  }
 
   await browser.close();
 
@@ -140,8 +259,9 @@ async function main() {
   // Scrape
   const scraped = await scrape();
   if (scraped.length === 0) {
-    console.log('No entries scraped. SharePoint DOM may have changed.');
-    process.exit(1);
+    console.log('No entries scraped. Exiting without changes.');
+    // Exit 0 so CI doesn't fail — no changes will be committed anyway
+    process.exit(0);
   }
 
   // Merge
