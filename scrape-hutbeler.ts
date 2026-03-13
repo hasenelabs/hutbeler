@@ -1,19 +1,15 @@
 /**
  * Diyanet Hutbe Scraper
  *
- * Scrapes Friday sermons (hutbeler) from:
- *   https://dinhizmetleri.diyanet.gov.tr
- *
- * Merges new entries into hutbeler.json.
+ * Fetches Friday sermons (hutbeler) from the Diyanet website.
+ * Uses plain HTTP fetch + HTML parsing (no browser needed).
  *
  * Usage:
  *   npx ts-node scripts/scrape-hutbeler.ts
- *   npx ts-node scripts/scrape-hutbeler.ts --debug   (saves rendered HTML)
  *
- * Requires: puppeteer (devDependency)
+ * No external dependencies required (uses built-in fetch).
  */
 
-import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -28,248 +24,290 @@ interface Hutbe {
   source: string;
 }
 
+const BASE_URL = 'https://dinhizmetleri.diyanet.gov.tr';
 const TARGET_URL =
-  'https://dinhizmetleri.diyanet.gov.tr/kategoriler/yayinlarimiz/hutbeler/t%C3%BCrk%C3%A7e';
+  `${BASE_URL}/kategoriler/yayinlarimiz/hutbeler/t%C3%BCrk%C3%A7e`;
 const OUTPUT_PATH = path.resolve(__dirname, '../hutbeler.json');
-const DEBUG = process.argv.includes('--debug');
+
+function resolveUrl(href: string): string {
+  if (href.startsWith('http')) return href;
+  if (href.startsWith('/')) return BASE_URL + href;
+  return BASE_URL + '/' + href;
+}
+
+/**
+ * Derive a clean title from a PDF or DOC URL.
+ * e.g. "Zekat%20ve%20F%C4%B1t%C4%B1r%20Sadakas%C4%B1.pdf" → "Zekat ve Fıtır Sadakası"
+ */
+function titleFromUrl(url: string): string {
+  try {
+    const fileName = decodeURIComponent(url.split('/').pop() || '');
+    return fileName
+      .replace(/\.pdf$|\.docx?$/i, '')
+      .replace(/Sesli Hutbe\s*\(?\s*/i, '')
+      .replace(/\)\s*$/, '')
+      .trim();
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Strip all HTML tags and decode entities.
+ */
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+}
 
 async function scrape(): Promise<Hutbe[]> {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  console.log('Fetching:', TARGET_URL);
+
+  const response = await fetch(TARGET_URL, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      Accept:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'tr-TR,tr;q=0.9,en;q=0.8',
+    },
   });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 800 });
 
-  console.log('Navigating to:', TARGET_URL);
-  await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 60_000 });
+  if (!response.ok) {
+    console.error(`HTTP ${response.status}: ${response.statusText}`);
+    return [];
+  }
 
-  // Wait for SharePoint CSR to render — try multiple possible selectors
-  const possibleSelectors = [
-    '.ms-listviewtable',
-    '.ms-vb2',
-    '.ms-vb-title',
-    'table.ms-listviewtable',
-    '#onetidDoclibViewTbl0',
-    '[id^="onetidDoclibViewTbl"]',
-    '.ms-srch-item',
-    '.dfwp-list',
-    'table',
-  ];
+  const html = await response.text();
+  console.log(`Fetched ${html.length} bytes`);
 
-  let foundSelector = '';
-  for (const sel of possibleSelectors) {
+  // Save HTML for debugging
+  const debugPath = path.resolve(__dirname, 'debug-page.html');
+  fs.writeFileSync(debugPath, html, 'utf-8');
+  console.log(`Debug HTML saved to ${debugPath}`);
+
+  const results: Hutbe[] = [];
+
+  // ── Strategy 1: SharePoint ListData JSON ──────────────────────
+  const listDataMatch = html.match(/ListData"\s*:\s*(\{[\s\S]*?\})\s*[,;]/);
+  if (listDataMatch) {
     try {
-      await page.waitForSelector(sel, { timeout: 5_000 });
-      foundSelector = sel;
-      console.log(`Found selector: ${sel}`);
-      break;
-    } catch {
-      // try next
+      const listData = JSON.parse(listDataMatch[1]);
+      console.log('Found SharePoint ListData');
+      if (listData.Row && Array.isArray(listData.Row)) {
+        for (const row of listData.Row) {
+          const date = row.Tarih || row.Date || '';
+          const title = row.Title || row.FileLeafRef || '';
+          if (date && title) {
+            results.push({
+              id: 0,
+              date,
+              title: title.replace(/\.pdf$|\.doc$|\.docx$/i, ''),
+              pdf: row.FileRef?.endsWith('.pdf') ? resolveUrl(row.FileRef) : undefined,
+              source: 'website',
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse ListData:', e);
     }
   }
 
-  if (!foundSelector) {
-    console.warn('No known selector found, will try generic extraction...');
-  }
+  // ── Strategy 2: Parse HTML table rows ─────────────────────────
+  if (results.length === 0) {
+    // Match individual <tr> rows. Use a non-greedy match that stops at
+    // the NEXT </tr> to avoid grabbing nested/wrapper rows.
+    const rowPattern = /<tr[^>]*?>([\s\S]*?)<\/tr>/gi;
+    let m;
 
-  // Extra wait for SharePoint async render
-  await new Promise((r) => setTimeout(r, 5000));
+    while ((m = rowPattern.exec(html)) !== null) {
+      const rowHtml = m[1];
 
-  // Debug: save rendered HTML
-  if (DEBUG) {
-    const html = await page.content();
-    const debugPath = path.resolve(__dirname, 'debug-page.html');
-    fs.writeFileSync(debugPath, html, 'utf-8');
-    console.log(`Debug HTML saved to ${debugPath}`);
-  }
-
-  const entries = await page.evaluate(() => {
-    const results: Array<{
-      date: string;
-      title: string;
-      pdf?: string;
-      doc?: string;
-      audio?: string;
-    }> = [];
-
-    // Strategy 1: SharePoint table rows (tr > td)
-    const rows = document.querySelectorAll('tr');
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const cells = row.querySelectorAll('td');
-      if (cells.length < 2) continue;
-
-      // Look for a date pattern in any cell
-      let dateText = '';
-      let titleText = '';
-
-      for (let j = 0; j < cells.length; j++) {
-        const text = cells[j]?.textContent?.trim() ?? '';
-        if (/^\d{2}\.\d{2}\.\d{4}$/.test(text) && !dateText) {
-          dateText = text;
-        } else if (text.length > 5 && !titleText && !/^\d{2}\.\d{2}\.\d{4}$/.test(text)) {
-          titleText = text;
-        }
+      // Extract all <td> cells from this row
+      const cellPattern = /<td[^>]*?>([\s\S]*?)<\/td>/gi;
+      const cells: { text: string; html: string }[] = [];
+      let cellMatch;
+      while ((cellMatch = cellPattern.exec(rowHtml)) !== null) {
+        cells.push({
+          text: stripHtml(cellMatch[1]),
+          html: cellMatch[1],
+        });
       }
 
-      if (!dateText || !titleText) continue;
+      if (cells.length < 2) continue;
 
-      const links = row.querySelectorAll('a[href]');
+      // ── Find the date cell (DD.MM.YYYY) ──
+      let date = '';
+      for (const cell of cells) {
+        if (/^\d{2}\.\d{2}\.\d{4}$/.test(cell.text)) {
+          date = cell.text;
+          break;
+        }
+      }
+      if (!date) continue;
+
+      // ── Extract links from the entire row ──
+      const linkPattern = /href="([^"]*?)"/gi;
       let pdf: string | undefined;
       let doc: string | undefined;
       let audio: string | undefined;
-
-      for (let k = 0; k < links.length; k++) {
-        const href = (links[k] as HTMLAnchorElement).href;
-        const hrefLower = href.toLowerCase();
-        if (hrefLower.includes('.pdf')) pdf = href;
-        else if (hrefLower.includes('.doc')) doc = href;
-        else if (hrefLower.includes('.mp3') || hrefLower.includes('.wav')) audio = href;
+      let linkMatch;
+      while ((linkMatch = linkPattern.exec(rowHtml)) !== null) {
+        const href = linkMatch[1];
+        const lower = href.toLowerCase();
+        if (lower.endsWith('.pdf')) pdf = resolveUrl(href);
+        else if (lower.endsWith('.doc') || lower.endsWith('.docx')) doc = resolveUrl(href);
+        else if (lower.endsWith('.mp3') || lower.endsWith('.wav')) audio = resolveUrl(href);
       }
 
-      results.push({ date: dateText, title: titleText, pdf, doc, audio });
-    }
-
-    // Strategy 2: If no table rows found, try extracting from page text
-    if (results.length === 0) {
-      const bodyText = document.body.innerText;
-      const datePattern = /(\d{2}\.\d{2}\.\d{4})/g;
-      const allLinks = document.querySelectorAll('a[href]');
-
-      // Group links by proximity to dates
-      const linkMap = new Map<string, { pdf?: string; doc?: string; audio?: string }>();
-      for (let i = 0; i < allLinks.length; i++) {
-        const a = allLinks[i] as HTMLAnchorElement;
-        const href = a.href.toLowerCase();
-        if (href.includes('.pdf') || href.includes('.doc') || href.includes('.mp3')) {
-          // Find the closest parent that might be a row
-          let parent = a.closest('tr, div[class*="row"], div[class*="item"], li');
-          if (parent) {
-            const parentText = parent.textContent ?? '';
-            const dateMatch = parentText.match(/\d{2}\.\d{2}\.\d{4}/);
-            if (dateMatch) {
-              const key = dateMatch[0];
-              if (!linkMap.has(key)) linkMap.set(key, {});
-              const links = linkMap.get(key)!;
-              if (href.includes('.pdf')) links.pdf = a.href;
-              else if (href.includes('.doc')) links.doc = a.href;
-              else if (href.includes('.mp3')) links.audio = a.href;
-            }
-          }
+      // ── Determine the title ──
+      // Candidate: first cell that is not a date and has reasonable length
+      let title = '';
+      for (const cell of cells) {
+        const t = cell.text;
+        if (
+          t.length > 3 &&
+          t.length < 200 &&
+          !/^\d{2}\.\d{2}\.\d{4}$/.test(t) &&
+          !/^Sesli Hutbe$/i.test(t) &&
+          !/^PDF$/i.test(t) &&
+          !/^WORD$/i.test(t) &&
+          !/^MP3$/i.test(t) &&
+          !/^TARİH/i.test(t) &&
+          !/^BAŞLIK/i.test(t)
+        ) {
+          title = t;
+          break;
         }
       }
+
+      // Fallback: derive title from PDF or DOC filename
+      if (!title && pdf) title = titleFromUrl(pdf);
+      if (!title && doc) title = titleFromUrl(doc);
+      if (!title && audio) title = titleFromUrl(audio);
+
+      if (!title) continue;
+
+      // Skip rows where the "title" contains multiple dates (it's a table header/wrapper)
+      const dateCount = (title.match(/\d{2}\.\d{2}\.\d{4}/g) || []).length;
+      if (dateCount > 1) {
+        console.log(`  SKIP (multi-date garbage): ${title.substring(0, 60)}...`);
+        continue;
+      }
+
+      results.push({ id: 0, date, title, pdf, doc, audio, source: 'website' });
     }
-
-    return results;
-  });
-
-  // Debug: log page structure info
-  if (DEBUG || entries.length === 0) {
-    const debugInfo = await page.evaluate(() => {
-      const tables = document.querySelectorAll('table');
-      const trs = document.querySelectorAll('tr');
-      const tds = document.querySelectorAll('td');
-      const divItems = document.querySelectorAll('[class*="item"], [class*="list"], [class*="vb"]');
-
-      // Get sample of visible text with dates
-      const bodyText = document.body.innerText;
-      const dateMatches = bodyText.match(/\d{2}\.\d{2}\.\d{4}/g) || [];
-
-      // Get all unique class names on tables and their children
-      const tableClasses: string[] = [];
-      tables.forEach((t) => {
-        if (t.className) tableClasses.push(`table.${t.className}`);
-        t.querySelectorAll('[class]').forEach((el) => {
-          if (el.className && typeof el.className === 'string') {
-            tableClasses.push(el.tagName.toLowerCase() + '.' + el.className.split(' ').join('.'));
-          }
-        });
-      });
-
-      return {
-        tables: tables.length,
-        trs: trs.length,
-        tds: tds.length,
-        divItems: divItems.length,
-        datesFound: dateMatches.slice(0, 5),
-        sampleClasses: [...new Set(tableClasses)].slice(0, 20),
-        bodyTextSample: bodyText.substring(0, 2000),
-      };
-    });
-
-    console.log('\n=== DEBUG INFO ===');
-    console.log('Tables:', debugInfo.tables);
-    console.log('TRs:', debugInfo.trs);
-    console.log('TDs:', debugInfo.tds);
-    console.log('Div items:', debugInfo.divItems);
-    console.log('Dates found in text:', debugInfo.datesFound);
-    console.log('Sample classes:', debugInfo.sampleClasses.join('\n  '));
-    console.log('\nBody text sample:\n', debugInfo.bodyTextSample);
-    console.log('=================\n');
   }
 
-  await browser.close();
+  console.log(`Extracted ${results.length} entries`);
 
-  console.log(`Scraped ${entries.length} entries`);
-  return entries.map((e, i) => ({
-    id: i, // Temporary; will be reassigned during merge
-    date: e.date,
-    title: e.title,
-    pdf: e.pdf,
-    doc: e.doc,
-    audio: e.audio,
-    source: 'website',
-  }));
+  // Deduplicate by date+title (same hutbe can appear in multiple rows)
+  const seen = new Set<string>();
+  const deduped: Hutbe[] = [];
+  for (const h of results) {
+    const key = `${h.date}|${h.title}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(h);
+  }
+
+  if (deduped.length < results.length) {
+    console.log(`Deduped: ${results.length} → ${deduped.length}`);
+  }
+
+  // Sort by date ascending (oldest first) so IDs increase chronologically
+  deduped.sort((a, b) => {
+    const [ad, am, ay] = a.date.split('.').map(Number);
+    const [bd, bm, by] = b.date.split('.').map(Number);
+    const dateA = new Date(ay, am - 1, ad).getTime();
+    const dateB = new Date(by, bm - 1, bd).getTime();
+    return dateA - dateB;
+  });
+
+  return deduped;
 }
 
 function merge(existing: Hutbe[], scraped: Hutbe[]): Hutbe[] {
-  const existingByTitle = new Map<string, Hutbe>();
+  // Index existing entries by date+title for dedup
+  const existingKeys = new Set<string>();
   for (const h of existing) {
-    existingByTitle.set(h.title, h);
+    existingKeys.add(`${h.date}|${h.title}`);
   }
 
   let maxId = existing.reduce((max, h) => Math.max(max, h.id), 0);
   const merged = [...existing];
 
   for (const s of scraped) {
-    if (!existingByTitle.has(s.title)) {
+    const key = `${s.date}|${s.title}`;
+    if (!existingKeys.has(key)) {
       maxId++;
-      merged.push({
-        ...s,
-        id: maxId,
-      });
+      merged.push({ ...s, id: maxId });
+      existingKeys.add(key);
       console.log(`  NEW: [${maxId}] ${s.date} - ${s.title}`);
     }
   }
 
-  // Sort by id descending (newest first)
-  merged.sort((a, b) => b.id - a.id);
+  // Sort by date descending (newest first), using date for ordering
+  merged.sort((a, b) => {
+    const [ad, am, ay] = a.date.split('.').map(Number);
+    const [bd, bm, by] = b.date.split('.').map(Number);
+    const dateA = new Date(ay, am - 1, ad).getTime();
+    const dateB = new Date(by, bm - 1, bd).getTime();
+    return dateB - dateA;
+  });
+
+  // Reassign IDs based on date order (newest = highest ID)
+  for (let i = 0; i < merged.length; i++) {
+    merged[i].id = merged.length - i;
+  }
+
   return merged;
 }
 
 async function main() {
-  // Load existing data
   let existing: Hutbe[] = [];
   if (fs.existsSync(OUTPUT_PATH)) {
     existing = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf-8'));
     console.log(`Loaded ${existing.length} existing entries`);
+
+    // Clean up any garbage entries from previous broken scraper runs
+    const cleanExisting = existing.filter((h) => {
+      const dateCount = (h.title.match(/\d{2}\.\d{2}\.\d{4}/g) || []).length;
+      if (dateCount > 1 || h.title.length > 200) {
+        console.log(`  REMOVE garbage: [${h.id}] ${h.title.substring(0, 60)}...`);
+        return false;
+      }
+      if (/^Sesli Hutbe$/i.test(h.title)) {
+        console.log(`  REMOVE bad title: [${h.id}] "${h.title}"`);
+        return false;
+      }
+      return true;
+    });
+
+    if (cleanExisting.length < existing.length) {
+      console.log(`Cleaned: ${existing.length} → ${cleanExisting.length} entries`);
+    }
+    existing = cleanExisting;
   }
 
-  // Scrape
   const scraped = await scrape();
   if (scraped.length === 0) {
-    console.log('No entries scraped. Exiting without changes.');
-    // Exit 0 so CI doesn't fail — no changes will be committed anyway
+    console.log('No entries scraped. Check debug-page.html for page content.');
     process.exit(0);
   }
 
-  // Merge
   const merged = merge(existing, scraped);
   const newCount = merged.length - existing.length;
   console.log(`Merged: ${merged.length} total, ${newCount} new`);
 
-  // Write
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(merged, null, 2), 'utf-8');
   console.log(`Written to ${OUTPUT_PATH}`);
 }
