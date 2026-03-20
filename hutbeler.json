@@ -1,5 +1,23 @@
 [
   {
+    "id": 36,
+    "date": "20.03.2026",
+    "title": "Ramazan Bayramı",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan%20Bayram%C4%B1.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Ramazan%20Bayram%C4%B1.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Ramazan%20Bayram%C4%B1).mp3",
+    "source": "website"
+  },
+  {
+    "id": 35,
+    "date": "20.03.2026",
+    "title": "Hayatı Ramazan Kılmak",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Hayat%C4%B1%20Ramazan%20K%C4%B1lmak.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Hayat%C4%B1%20Ramazan%20K%C4%B1lmak.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Hayat%C4%B1%20Ramazan%20K%C4%B1lmak).mp3",
+    "source": "website"
+  },
+  {
     "id": 34,
     "date": "13.03.2026",
     "title": "Hak ve Hakikatin Temsilcileri: Peygamberler",
