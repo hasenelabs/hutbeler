@@ -1,5 +1,14 @@
 [
   {
+    "id": 37,
+    "date": "27.03.2026",
+    "title": "Tevekkül",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Tevekk%C3%BCl.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Tevekk%C3%BCl.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Tevekk%C3%BCl).mp3",
+    "source": "website"
+  },
+  {
     "id": 36,
     "date": "20.03.2026",
     "title": "Ramazan Bayramı",
