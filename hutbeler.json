@@ -1,5 +1,14 @@
 [
   {
+    "id": 38,
+    "date": "03.04.2026",
+    "title": "Cuma ve Ümmet Bilinci",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Cuma%20ve%20%C3%9Cmmet%20Bilinci.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Cuma%20ve%20%C3%9Cmmet%20Bilinci.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Cuma%20ve%20%C3%9Cmmet%20Bilinci).mp3",
+    "source": "website"
+  },
+  {
     "id": 37,
     "date": "27.03.2026",
     "title": "Tevekkül",
