@@ -14,6 +14,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs') as typeof import('fs');
 const path = require('path') as typeof import('path');
+const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.mjs');
 
 interface Hutbe {
   id: number;
@@ -103,26 +104,75 @@ async function fetchPage(url: string): Promise<{ rows: SPRow[] }> {
   return { rows };
 }
 
+async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
+  try {
+    const response = await fetch(pdfUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
+    if (!response.ok) return undefined;
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const uint8 = new Uint8Array(buffer);
+    const doc = await pdfjsLib.getDocument({ data: uint8, verbosity: 0 }).promise;
+
+    let fullText = '';
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item: any) => item.str).join(' ');
+      fullText += pageText + '\n';
+    }
+
+    const text = fullText.trim();
+    return text && text.length > 50 ? text : undefined;
+  } catch (e) {
+    console.warn(`  Failed to fetch PDF content: ${(e as Error).message}`);
+    return undefined;
+  }
+}
+
 async function scrapeAll(): Promise<Hutbe[]> {
   const { rows: allRows } = await fetchPage(START_URL);
   console.log(`\nTotal scraped: ${allRows.length} entries`);
 
   // Convert SP rows to Hutbe objects
-  const hutbeler: Hutbe[] = allRows.map((row) => ({
-    id: 0, // Will be assigned later
-    date: normalizeDate(row.Tarih),
-    title: row.Title
+  const hutbeler: Hutbe[] = [];
+  for (const row of allRows) {
+    const title = row.Title
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&')
       .replace(/&quot;/g, '"')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
-      .trim(),
-    pdf: row.PDF ? resolveUrl(row.PDF) : undefined,
-    doc: row.Word ? resolveUrl(row.Word) : undefined,
-    audio: row.Ses ? resolveUrl(row.Ses) : undefined,
-    source: 'website',
-  }));
+      .trim();
+    const docUrl = row.Word ? resolveUrl(row.Word) : undefined;
+    const pdfUrl = row.PDF ? resolveUrl(row.PDF) : undefined;
+
+    // Fetch content from PDF file
+    let content: string | undefined;
+    if (pdfUrl) {
+      console.log(`  Fetching content for: ${title}`);
+      content = await fetchPdfContent(pdfUrl);
+      if (content) {
+        console.log(`    ✓ ${content.length} chars`);
+      } else {
+        console.log(`    ✗ No content`);
+      }
+    }
+
+    hutbeler.push({
+      id: 0,
+      date: normalizeDate(row.Tarih),
+      title,
+      pdf: row.PDF ? resolveUrl(row.PDF) : undefined,
+      doc: docUrl,
+      audio: row.Ses ? resolveUrl(row.Ses) : undefined,
+      content,
+      source: 'website',
+    });
+  }
 
   // Deduplicate by date+title
   const seen = new Set<string>();
@@ -164,6 +214,13 @@ function merge(existing: Hutbe[], scraped: Hutbe[]): Hutbe[] {
       merged.push(s);
       existingKeys.add(key);
       console.log(`  NEW: ${s.date} - ${s.title}`);
+    } else {
+      // Update content if scraped version has it and existing doesn't
+      const existingEntry = merged.find((h) => `${h.date}|${h.title}` === key);
+      if (existingEntry && s.content && !existingEntry.content) {
+        existingEntry.content = s.content;
+        console.log(`  UPDATED content: ${s.date} - ${s.title}`);
+      }
     }
   }
 
