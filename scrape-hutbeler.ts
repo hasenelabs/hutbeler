@@ -107,6 +107,7 @@ async function fetchPage(url: string): Promise<{ rows: SPRow[] }> {
 async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
   try {
     if (!pdfjsLib) {
+      // @ts-ignore: pdfjs-dist v4 is ESM-only, dynamic import needed for CJS
       pdfjsLib = await import('pdfjs-dist');
     }
     const response = await fetch(pdfUrl, {
