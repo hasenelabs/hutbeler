@@ -14,7 +14,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs') as typeof import('fs');
 const path = require('path') as typeof import('path');
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+let pdfjsLib: any;
 
 interface Hutbe {
   id: number;
@@ -106,6 +106,9 @@ async function fetchPage(url: string): Promise<{ rows: SPRow[] }> {
 
 async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
   try {
+    if (!pdfjsLib) {
+      pdfjsLib = await import('pdfjs-dist');
+    }
     const response = await fetch(pdfUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
