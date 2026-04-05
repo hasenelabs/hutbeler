@@ -14,7 +14,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs') as typeof import('fs');
 const path = require('path') as typeof import('path');
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.mjs');
+const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 
 interface Hutbe {
   id: number;
@@ -125,8 +125,26 @@ async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
       fullText += pageText + '\n';
     }
 
-    const text = fullText.trim();
-    return text && text.length > 50 ? text : undefined;
+    let text = fullText.trim();
+    if (!text || text.length < 50) return undefined;
+
+    // Clean up PDF extraction artifacts:
+    // 1. Remove leading date line (e.g. "Tarih: 03.04.2026")
+    text = text.replace(/^Tarih\s*:?\s*\d{2}\.\d{2}\.\d{4}\s*/i, '');
+    // 2. Remove Arabic text block at the beginning (before the Turkish title)
+    // Find the first all-caps Turkish title like "CUMA VE ÜMMET BİLİNCİ"
+    const titleMatch = text.match(/[A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜ\s,;:.''""\-()]+(?:Muhterem|Aziz|Değerli|Kıymetli)/);
+    if (titleMatch && titleMatch.index !== undefined && titleMatch.index > 0) {
+      text = text.substring(titleMatch.index);
+    }
+    // 3. Fix excessive spaces (PDF artifacts)
+    text = text.replace(/  +/g, ' ');
+    // 4. Fix spaces before punctuation
+    text = text.replace(/ ([.,;:!?])/g, '$1');
+    // 5. Normalize line breaks
+    text = text.replace(/\n +/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+
+    return text;
   } catch (e) {
     console.warn(`  Failed to fetch PDF content: ${(e as Error).message}`);
     return undefined;
@@ -215,11 +233,15 @@ function merge(existing: Hutbe[], scraped: Hutbe[]): Hutbe[] {
       existingKeys.add(key);
       console.log(`  NEW: ${s.date} - ${s.title}`);
     } else {
-      // Update content if scraped version has it and existing doesn't
+      // Always update content from scraped (freshly extracted from PDF)
       const existingEntry = merged.find((h) => `${h.date}|${h.title}` === key);
-      if (existingEntry && s.content && !existingEntry.content) {
+      if (existingEntry && s.content) {
         existingEntry.content = s.content;
-        console.log(`  UPDATED content: ${s.date} - ${s.title}`);
+        // Also update links in case they changed
+        if (s.pdf) existingEntry.pdf = s.pdf;
+        if (s.doc) existingEntry.doc = s.doc;
+        if (s.audio) existingEntry.audio = s.audio;
+        console.log(`  UPDATED: ${s.date} - ${s.title}`);
       }
     }
   }
