@@ -1,5 +1,14 @@
 [
   {
+    "id": 42,
+    "date": "01.05.2026",
+    "title": "Alın Teri Mukaddestir",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Al%C4%B1n%20Teri%20Mukaddestir.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Al%C4%B1n%20Teri%20Mukaddestir.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Al%C4%B1n%20Teri%20Mukaddestir).mp3",
+    "source": "website"
+  },
+  {
     "id": 41,
     "date": "24.04.2026",
     "title": "Merhamet Eğitimi",
