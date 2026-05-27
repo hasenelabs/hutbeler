@@ -1,5 +1,32 @@
 [
   {
+    "id": 46,
+    "date": "27.05.2026",
+    "title": "Kurban Bayramı",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kurban%20Bayram%C4%B1-.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Kurban%20Bayram%C4%B1-.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Kurban%20Bayram%C4%B1-).mp3",
+    "source": "website"
+  },
+  {
+    "id": 45,
+    "date": "22.05.2026",
+    "title": "Söz Ahlakı ve Sosyal Medya",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/S%C3%B6z%20Ahlak%C4%B1%20ve%20Sosyal%20Medya.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/S%C3%B6z%20Ahlak%C4%B1%20ve%20Sosyal%20Medya.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(S%C3%B6z%20Ahlak%C4%B1%20ve%20Sosyal%20Medya).mp3",
+    "source": "website"
+  },
+  {
+    "id": 44,
+    "date": "15.05.2026",
+    "title": "Toplumsal Sorumluluklarımız",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Toplumsal%20Sorumluluklar%C4%B1m%C4%B1z.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Toplumsal%20Sorumluluklar%C4%B1m%C4%B1z.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Toplumsal%20Sorumluluklar%C4%B1m%C4%B1z).mp3",
+    "source": "website"
+  },
+  {
     "id": 43,
     "date": "08.05.2026",
     "title": "İbadetler, Bizi Rabbimize Yakınlaştırır",
