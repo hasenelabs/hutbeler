@@ -2,8 +2,8 @@ name: Update Hutbeler
 
 on:
   schedule:
-    - cron: '0 9 * * 5' # Her Cuma 9:00 UTC (12:00 TR)
-  workflow_dispatch: # Manuel tetikleme
+    - cron: '0 */4 * * *' # Her gün, 4 saatte bir (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+  workflow_dispatch: # Manuel tetikleme hala aktif
 
 jobs:
   scrape:
