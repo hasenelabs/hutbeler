@@ -1,5 +1,14 @@
 [
   {
+    "id": 50,
+    "date": "19.06.2026",
+    "title": "Birlikte Rahmet Vardır",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlikte%20Rahmet%20Vard%C4%B1r.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Birlikte%20Rahmet%20Vard%C4%B1r.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Birlikte%20Rahmet%20Vard%C4%B1r).mp3",
+    "source": "website"
+  },
+  {
     "id": 49,
     "date": "12.06.2026",
     "title": "Hicri Yeni Yıla Girerken",
