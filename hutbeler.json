@@ -1,5 +1,14 @@
 [
   {
+    "id": 51,
+    "date": "26.06.2026",
+    "title": "Aile Olmak",
+    "pdf": "https://dinhizmetleri.diyanet.gov.tr/Documents/Aile%20Olmak.pdf",
+    "doc": "https://dinhizmetleri.diyanet.gov.tr/Documents/Aile%20Olmak.doc",
+    "audio": "https://dinhizmetleri.diyanet.gov.tr/Documents/Sesli%20Hutbe%20(Aile%20Olmak).mp3",
+    "source": "website"
+  },
+  {
     "id": 50,
     "date": "19.06.2026",
     "title": "Birlikte Rahmet Vardır",
