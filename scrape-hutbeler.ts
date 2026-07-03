@@ -23,6 +23,7 @@ interface Hutbe {
   pdf?: string;
   doc?: string;
   audio?: string;
+  verse?: string;
   content?: string;
   source: string;
 }
@@ -104,7 +105,23 @@ async function fetchPage(url: string): Promise<{ rows: SPRow[] }> {
   return { rows };
 }
 
-async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
+// Turkish salutations that open each hutbe paragraph — reliable paragraph
+// boundaries in Diyanet sermons.
+const SALUTATION =
+  /(Muhterem|Aziz|Kıymetli|Değerli|Sevgili|Saygıdeğer|Kardeşlerim)\s*(Müslümanlar|Mü['’]?minler|Müminler|Kardeşlerim|Kardeşler|Cemaat|Mü['’]?min)?\s*!/g;
+
+function arabicFraction(s: string): number {
+  const ar = (s.match(/[؀-ۿ]/g) || []).length;
+  const total = (s.match(/\S/g) || []).length;
+  return total ? ar / total : 0;
+}
+
+interface PdfExtract {
+  verse?: string; // opening Arabic block (besmele + âyah + hadith)
+  content?: string; // Turkish body, split into paragraphs
+}
+
+async function fetchPdfContent(pdfUrl: string): Promise<PdfExtract | undefined> {
   try {
     if (!pdfjsLib) {
       // Legacy build is the one supported in Node.js (no DOM/worker needed).
@@ -118,51 +135,68 @@ async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
     });
     if (!response.ok) return undefined;
 
-    const buffer = Buffer.from(await response.arrayBuffer());
-    const uint8 = new Uint8Array(buffer);
+    const uint8 = new Uint8Array(Buffer.from(await response.arrayBuffer()));
     const doc = await pdfjsLib.getDocument({ data: uint8, verbosity: 0 }).promise;
 
-    let fullText = '';
+    const verseLines: string[] = [];
+    let verseDone = false;
+    let flat = '';
+
     for (let i = 1; i <= doc.numPages; i++) {
       const page = await doc.getPage(i);
       const viewport = page.getViewport({ scale: 1 });
       const mid = viewport.width / 2;
       const content = await page.getTextContent();
-      // Diyanet hutbes use a 2-column layout. Reconstruct reading order:
-      // left column top→bottom, then right column top→bottom (PDF y grows up).
-      const positioned = content.items
+      const items = content.items
         .filter((it: any) => it.str && it.str.trim())
-        .map((it: any) => ({ s: it.str, x: it.transform[4], y: it.transform[5] }));
-      positioned.sort((a: any, b: any) => {
-        const ca = a.x < mid ? 0 : 1;
-        const cb = b.x < mid ? 0 : 1;
-        if (ca !== cb) return ca - cb;
-        if (Math.abs(a.y - b.y) > 4) return b.y - a.y;
-        return a.x - b.x;
-      });
-      fullText += positioned.map((p: any) => p.s).join(' ') + '\n';
+        .map((it: any) => ({ s: it.str as string, x: it.transform[4] as number, y: it.transform[5] as number }));
+
+      // 2-column layout: read left column top→bottom, then right column.
+      for (const col of [0, 1]) {
+        const colItems = items.filter((it: any) => (it.x < mid ? 0 : 1) === col);
+        // Group into lines by y.
+        const lines: Record<number, any[]> = {};
+        for (const it of colItems) {
+          const key = Math.round(it.y / 5) * 5;
+          (lines[key] = lines[key] || []).push(it);
+        }
+        const ys = Object.keys(lines).map(Number).sort((a, b) => b - a);
+        for (const y of ys) {
+          const raw = lines[y].map((it: any) => it.s).join(' ');
+          const isArabic = arabicFraction(raw) > 0.4;
+          // Arabic reads RTL → reverse item order and don't insert spaces.
+          const ordered = [...lines[y]].sort((a: any, b: any) => (isArabic ? b.x - a.x : a.x - b.x));
+          const line = ordered.map((it: any) => it.s).join(isArabic ? '' : ' ');
+          // The opening Arabic block sits at the top of page 1's left column,
+          // before the all-caps Turkish title.
+          if (i === 1 && col === 0 && isArabic && !verseDone && !/Tarih|\d{2}\.\d{2}\.\d{4}/.test(line)) {
+            verseLines.push(line);
+          } else {
+            if (i === 1 && col === 0 && !isArabic && /^[A-ZÇĞİÖŞÜ]{3,}/.test(line.trim())) verseDone = true;
+            flat += line + ' ';
+          }
+        }
+      }
     }
 
-    let text = fullText.trim();
+    const verse = verseLines.join('\n').replace(/ +/g, ' ').trim() || undefined;
+
+    // Turkish body: start at the first salutation (drops title + Arabic), then
+    // break into paragraphs before each salutation.
+    flat = flat.replace(/ +/g, ' ');
+    SALUTATION.lastIndex = 0;
+    const first = SALUTATION.exec(flat);
+    let text = first ? flat.slice(first.index) : flat.replace(/^Tarih\s*:?\s*\d{2}\.\d{2}\.\d{4}\s*/i, '');
+    text = text
+      .replace(SALUTATION, (m) => '\n\n' + m)
+      .replace(/^\n+/, '')
+      .replace(/ ([.,;:!?])/g, '$1')
+      .replace(/\n /g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
     if (!text || text.length < 50) return undefined;
-
-    // Clean up PDF extraction artifacts:
-    // 1. Remove leading date line (e.g. "Tarih: 03.04.2026")
-    text = text.replace(/^Tarih\s*:?\s*\d{2}\.\d{2}\.\d{4}\s*/i, '');
-    // 2. Remove Arabic text block at the beginning (before the Turkish title)
-    // Find the first all-caps Turkish title like "CUMA VE ÜMMET BİLİNCİ"
-    const titleMatch = text.match(/[A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜ\s,;:.''""\-()]+(?:Muhterem|Aziz|Değerli|Kıymetli)/);
-    if (titleMatch && titleMatch.index !== undefined && titleMatch.index > 0) {
-      text = text.substring(titleMatch.index);
-    }
-    // 3. Fix excessive spaces (PDF artifacts)
-    text = text.replace(/  +/g, ' ');
-    // 4. Fix spaces before punctuation
-    text = text.replace(/ ([.,;:!?])/g, '$1');
-    // 5. Normalize line breaks
-    text = text.replace(/\n +/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-
-    return text;
+    return { verse, content: text };
   } catch (e) {
     console.warn(`  Failed to fetch PDF content: ${(e as Error).message}`);
     return undefined;
@@ -186,13 +220,16 @@ async function scrapeAll(): Promise<Hutbe[]> {
     const docUrl = row.Word ? resolveUrl(row.Word) : undefined;
     const pdfUrl = row.PDF ? resolveUrl(row.PDF) : undefined;
 
-    // Fetch content from PDF file
+    // Fetch content (paragraphs + opening verse) from the PDF file
     let content: string | undefined;
+    let verse: string | undefined;
     if (pdfUrl) {
       console.log(`  Fetching content for: ${title}`);
-      content = await fetchPdfContent(pdfUrl);
+      const extract = await fetchPdfContent(pdfUrl);
+      content = extract?.content;
+      verse = extract?.verse;
       if (content) {
-        console.log(`    ✓ ${content.length} chars`);
+        console.log(`    ✓ ${content.length} chars${verse ? ` + verse (${verse.length})` : ''}`);
       } else {
         console.log(`    ✗ No content`);
       }
@@ -205,6 +242,7 @@ async function scrapeAll(): Promise<Hutbe[]> {
       pdf: row.PDF ? resolveUrl(row.PDF) : undefined,
       doc: docUrl,
       audio: row.Ses ? resolveUrl(row.Ses) : undefined,
+      verse,
       content,
       source: 'website',
     });
@@ -255,6 +293,7 @@ function merge(existing: Hutbe[], scraped: Hutbe[]): Hutbe[] {
       const existingEntry = merged.find((h) => `${h.date}|${h.title}` === key);
       if (existingEntry && s.content) {
         existingEntry.content = s.content;
+        if (s.verse) existingEntry.verse = s.verse;
         // Also update links in case they changed
         if (s.pdf) existingEntry.pdf = s.pdf;
         if (s.doc) existingEntry.doc = s.doc;
