@@ -107,8 +107,9 @@ async function fetchPage(url: string): Promise<{ rows: SPRow[] }> {
 async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
   try {
     if (!pdfjsLib) {
-      // @ts-ignore: pdfjs-dist v4 is ESM-only, dynamic import needed for CJS
-      pdfjsLib = await import('pdfjs-dist');
+      // Legacy build is the one supported in Node.js (no DOM/worker needed).
+      // @ts-ignore: ESM-only, dynamic import needed for CJS/ts-node
+      pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
     }
     const response = await fetch(pdfUrl, {
       headers: {
@@ -124,9 +125,22 @@ async function fetchPdfContent(pdfUrl: string): Promise<string | undefined> {
     let fullText = '';
     for (let i = 1; i <= doc.numPages; i++) {
       const page = await doc.getPage(i);
+      const viewport = page.getViewport({ scale: 1 });
+      const mid = viewport.width / 2;
       const content = await page.getTextContent();
-      const pageText = content.items.map((item: any) => item.str).join(' ');
-      fullText += pageText + '\n';
+      // Diyanet hutbes use a 2-column layout. Reconstruct reading order:
+      // left column top→bottom, then right column top→bottom (PDF y grows up).
+      const positioned = content.items
+        .filter((it: any) => it.str && it.str.trim())
+        .map((it: any) => ({ s: it.str, x: it.transform[4], y: it.transform[5] }));
+      positioned.sort((a: any, b: any) => {
+        const ca = a.x < mid ? 0 : 1;
+        const cb = b.x < mid ? 0 : 1;
+        if (ca !== cb) return ca - cb;
+        if (Math.abs(a.y - b.y) > 4) return b.y - a.y;
+        return a.x - b.x;
+      });
+      fullText += positioned.map((p: any) => p.s).join(' ') + '\n';
     }
 
     let text = fullText.trim();
